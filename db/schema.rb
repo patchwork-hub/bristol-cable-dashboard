@@ -898,6 +898,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_10_000001) do
     t.string "role"
     t.boolean "is_boost_bot", default: false, null: false
     t.integer "account_status", default: 0, null: false
+    t.index ["account_id", "patchwork_community_id"], name: "index_patchwork_communities_admins_on_account_and_community", unique: true
     t.index ["account_id", "patchwork_community_id"], name: "unique_community_admin_index", unique: true
     t.index ["account_id"], name: "index_patchwork_communities_admins_on_account_id"
     t.index ["patchwork_community_id"], name: "index_patchwork_communities_admins_on_patchwork_community_id"
@@ -1446,7 +1447,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_10_000001) do
     t.float "max_score"
     t.datetime "max_score_at", precision: nil
     t.string "display_name"
-    t.boolean "is_banned", default: false
     t.index "lower((name)::text) text_pattern_ops", name: "index_tags_on_name_lower_btree", unique: true
   end
 

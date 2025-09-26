@@ -5,6 +5,9 @@ class CreateUseageWaitLists < ActiveRecord::Migration[7.1]
       t.references :wait_list, null: false, foreign_key: {to_table: :patchwork_wait_lists}
       t.timestamps
     end
-    add_index :patchwork_useage_wait_lists, [:account_id, :wait_list_id], unique: true
+    
+    unless index_exists?(:patchwork_useage_wait_lists, [:account_id, :wait_list_id])
+      add_index :patchwork_useage_wait_lists, [:account_id, :wait_list_id], unique: true
+    end
   end
 end

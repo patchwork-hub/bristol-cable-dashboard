@@ -1,6 +1,8 @@
 class ModifyPatchworkCommunitiesAdmins < ActiveRecord::Migration[7.1]
   def change
-    remove_reference :patchwork_communities_admins, :account, foreign_key: true
+    def change
+      safety_assured { remove_reference :patchwork_communities_admins, :account, foreign_key: true }
+    end
 
     unless column_exists?(:patchwork_communities_admins, :display_name)
       add_column :patchwork_communities_admins, :display_name, :string

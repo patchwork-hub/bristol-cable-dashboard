@@ -7,6 +7,9 @@ class CreatePatchworkAccountCommunityAmplifier < ActiveRecord::Migration[7.1]
       t.boolean :amplifier_turn_on, null: false, default: false
       t.timestamps
     end
-    add_index :patchwork_community_amplifiers, [:account_id, :patchwork_community_id], unique: true, name: 'index_patchwork_commu_amplifiers_on_account_and_patchwork_commu'
+    
+    unless index_exists?(:patchwork_community_amplifiers, [:account_id, :patchwork_community_id], name: 'index_patchwork_commu_amplifiers_on_account_and_patchwork_commu')
+      add_index :patchwork_community_amplifiers, [:account_id, :patchwork_community_id], unique: true, name: 'index_patchwork_commu_amplifiers_on_account_and_patchwork_commu'
+    end
   end
 end

@@ -8,6 +8,8 @@ class CreateIpAddresses < ActiveRecord::Migration[7.1]
       t.timestamps
     end
 
-    add_index :ip_addresses, :ip, unique: true
+    unless index_exists?(:ip_addresses, :ip)
+      add_index :ip_addresses, :ip, unique: true
+    end
   end
 end

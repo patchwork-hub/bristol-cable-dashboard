@@ -5,6 +5,8 @@ class CreateAppVersions < ActiveRecord::Migration[7.1]
       t.timestamps
     end
 
-    add_index :patchwork_app_versions, :version_name, unique: true
+    unless index_exists?(:patchwork_app_versions, :version_name)
+      add_index :patchwork_app_versions, :version_name, unique: true
+    end
   end
 end

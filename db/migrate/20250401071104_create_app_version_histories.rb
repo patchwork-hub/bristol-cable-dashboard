@@ -11,6 +11,8 @@ class CreateAppVersionHistories < ActiveRecord::Migration[7.1]
       remove_index :patchwork_app_version_histories, :app_version_id
     end
 
-    add_index :patchwork_app_version_histories, :app_version_id, unique: true
+    unless index_exists?(:patchwork_app_version_histories, :app_version_id, unique: true)
+      add_index :patchwork_app_version_histories, :app_version_id, unique: true
+    end
   end
 end

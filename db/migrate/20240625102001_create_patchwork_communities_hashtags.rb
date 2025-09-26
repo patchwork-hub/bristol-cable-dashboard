@@ -7,6 +7,8 @@ class CreatePatchworkCommunitiesHashtags < ActiveRecord::Migration[7.1]
       t.timestamps
     end
 
-    add_index :patchwork_communities_hashtags, [:patchwork_community_id, :hashtag], unique: true, name: 'index_patchwork_communities_hashtags_on_hashtag_and_community'
+    unless index_exists?(:patchwork_communities_hashtags, [:patchwork_community_id, :hashtag], name: 'index_patchwork_communities_hashtags_on_hashtag_and_community')
+      add_index :patchwork_communities_hashtags, [:patchwork_community_id, :hashtag], unique: true, name: 'index_patchwork_communities_hashtags_on_hashtag_and_community'
+    end
   end
 end
