@@ -26,10 +26,11 @@ class ServerSettingsController < ApplicationController
   def branding
     @brand_color.value = site_settings_params[:brand_color]
 
-    %w[favicon app_icon thumbnail].each do |var|
-      next unless site_settings_params[var].present?
-      upload = @site_uploads.find { |s| s.var == var }
-      upload.file = site_settings_params[var]
+    %w[mail_header_logo mail_footer_logo].each do |var|
+      if site_settings_params.key?(var) && site_settings_params[var].present?
+        upload = @site_uploads.find { |s| s.var == var }
+        upload.file = site_settings_params[var]
+      end
     end
 
     errors = []
@@ -42,7 +43,9 @@ class ServerSettingsController < ApplicationController
     else
       ActiveRecord::Base.transaction do
         @brand_color.save!
-        @site_uploads.each(&:save!)
+        @site_uploads.each do |upload|
+          upload.save! if upload.file.present? && upload.changed?
+        end
       end
       redirect_to server_settings_path, notice: "Server settings updated successfully."
     end
@@ -54,10 +57,10 @@ class ServerSettingsController < ApplicationController
     set_keyword_filter_group
     @server_settings = prepare_server_setting
 
-    @site_uploads = %w[favicon app_icon thumbnail].map do |var|
-      SiteUpload.find_or_create_by!(var: var)
+    @site_uploads = %w[mail_header_logo mail_footer_logo].map do |var|
+      SiteUpload.find_or_initialize_by(var: var)
     end
-    @brand_color = SiteSetting.find_or_create_by!(var: "brand_color")
+    @brand_color = SiteSetting.find_or_initialize_by(var: "brand_color")
   end
 
   def set_keyword_filter_group
@@ -113,6 +116,6 @@ class ServerSettingsController < ApplicationController
   end
 
   def site_settings_params
-    params.require(:site_settings).permit(:brand_color,:favicon,:app_icon,:thumbnail)
+    params.require(:site_settings).permit(:brand_color,:mail_header_logo,:mail_footer_logo)
   end
 end
