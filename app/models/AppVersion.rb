@@ -21,7 +21,7 @@ class AppVersion < ApplicationRecord
   validates :version_name, presence: true, uniqueness: { scope: :app_name, case_sensitive: false}
   validate :version_name_format
 
-  enum app_name: { patchwork: 0 }
+  enum app_name: { bristol_cable: 0 }
 
   # Virtual attribute for form handling
   attr_accessor :released_date
