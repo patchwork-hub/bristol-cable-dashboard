@@ -3,7 +3,7 @@ class AddAttributesWaitLists < ActiveRecord::Migration[7.1]
 
   def self.up
     unless column_exists?(:patchwork_wait_lists, :account_id)
-      add_reference :patchwork_wait_lists, :account, null: true, foreign_key: { to_table: :accounts }, index: { algorithm: :concurrently }
+      add_reference :patchwork_wait_lists, :account, null: true, index: { algorithm: :concurrently }
     end
     
     unless column_exists?(:patchwork_wait_lists, :confirmed_at)

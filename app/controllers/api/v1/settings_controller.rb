@@ -21,7 +21,32 @@ module Api
       def upsert
         @setting = Setting.find_or_initialize_by(account: @account, app_name: @app_name)
 
-        if @setting.update(setting_params)
+        # Initialize with default settings if new record
+        if @setting.new_record?
+          @setting.settings = {
+            theme: { type: nil },
+            user_timeline: [2] # default to community
+          }
+        end
+
+        # Merge only the provided settings
+        if setting_params[:settings].present?
+          current_settings = @setting.settings || {}
+          
+          # Update theme if provided
+          if setting_params.dig(:settings, :theme)
+            current_settings['theme'] = setting_params[:settings][:theme]
+          end
+          
+          # Update user_timeline only if provided
+          if setting_params.dig(:settings, :user_timeline)
+            current_settings['user_timeline'] = setting_params[:settings][:user_timeline]
+          end
+          
+          @setting.settings = current_settings
+        end
+
+        if @setting.save
           render_success(@setting, 'api.setting.messages.saved')
         else
           render_validation_failed(@setting.errors, 'api.setting.errors.validation_failed')
@@ -70,7 +95,7 @@ module Api
       end
 
       def setting_params
-        params.permit(settings: [theme: [:type]])
+        params.permit(settings: [theme: [:type], user_timeline: []])
       end
 
       def default_setting
@@ -79,9 +104,10 @@ module Api
           account_id: @account.id,
           settings: {
             theme: {
-              type: setting_params.present? ? setting_params[:settings][:theme][:type] || nil : nil
-            }
-          }
+              type: setting_params.present? ? setting_params.dig(:settings, :theme, :type) : nil
+            },
+            user_timeline: setting_params.present? ? setting_params.dig(:settings, :user_timeline) : [2] # default to community
+          }.compact
         }.compact
       end
     end

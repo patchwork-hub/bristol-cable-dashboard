@@ -426,6 +426,28 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_10_000001) do
     t.index ["account_id"], name: "index_custom_filters_on_account_id"
   end
 
+  create_table "deprecated_preview_cards", force: :cascade do |t|
+    t.bigint "status_id"
+    t.string "url", default: "", null: false
+    t.string "title"
+    t.string "description"
+    t.string "image_file_name"
+    t.string "image_content_type"
+    t.bigint "image_file_size"
+    t.datetime "image_updated_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.integer "type", default: 0, null: false
+    t.text "html", default: "", null: false
+    t.string "author_name", default: "", null: false
+    t.string "author_url", default: "", null: false
+    t.string "provider_name", default: "", null: false
+    t.string "provider_url", default: "", null: false
+    t.integer "width", default: 0, null: false
+    t.integer "height", default: 0, null: false
+    t.index ["status_id"], name: "index_deprecated_preview_cards_on_status_id", unique: true
+  end
+
   create_table "domain_allows", force: :cascade do |t|
     t.string "domain", default: "", null: false
     t.datetime "created_at", precision: nil, null: false
@@ -887,6 +909,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_10_000001) do
   end
 
   create_table "patchwork_communities_admins", force: :cascade do |t|
+    t.bigint "account_id", null: false
     t.bigint "patchwork_community_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -894,7 +917,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_10_000001) do
     t.string "email"
     t.string "username"
     t.string "password"
-    t.bigint "account_id"
     t.string "role"
     t.boolean "is_boost_bot", default: false, null: false
     t.integer "account_status", default: 0, null: false
@@ -1635,6 +1657,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_10_000001) do
   add_foreign_key "custom_filter_statuses", "custom_filters", on_delete: :cascade
   add_foreign_key "custom_filter_statuses", "statuses", on_delete: :cascade
   add_foreign_key "custom_filters", "accounts", on_delete: :cascade
+  add_foreign_key "deprecated_preview_cards", "statuses", on_delete: :cascade
   add_foreign_key "email_domain_blocks", "email_domain_blocks", column: "parent_id", on_delete: :cascade
   add_foreign_key "fasp_debug_callbacks", "fasp_providers"
   add_foreign_key "favourites", "accounts", name: "fk_5eb6c2b873", on_delete: :cascade
@@ -1683,7 +1706,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_10_000001) do
   add_foreign_key "oauth_applications", "users", column: "owner_id", name: "fk_b0988c7c0a", on_delete: :cascade
   add_foreign_key "patchwork_app_version_histories", "patchwork_app_versions", column: "app_version_id"
   add_foreign_key "patchwork_communities", "patchwork_collections"
-  add_foreign_key "patchwork_communities_admins", "accounts", on_delete: :cascade
+  add_foreign_key "patchwork_communities_admins", "accounts"
   add_foreign_key "patchwork_communities_admins", "patchwork_communities"
   add_foreign_key "patchwork_communities_filter_keywords", "patchwork_communities", on_delete: :cascade
   add_foreign_key "patchwork_communities_hashtags", "patchwork_communities", on_delete: :cascade
