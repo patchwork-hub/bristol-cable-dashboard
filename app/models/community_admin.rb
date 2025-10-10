@@ -12,7 +12,7 @@
 #  username               :string
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  account_id             :bigint
+#  account_id             :bigint           not null
 #  patchwork_community_id :bigint
 #
 # Indexes
@@ -24,7 +24,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (account_id => accounts.id) ON DELETE => cascade
+#  fk_rails_...  (account_id => accounts.id)
 #  fk_rails_...  (patchwork_community_id => patchwork_communities.id)
 #
 class CommunityAdmin < ApplicationRecord
