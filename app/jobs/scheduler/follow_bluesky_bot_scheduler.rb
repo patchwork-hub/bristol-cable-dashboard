@@ -8,7 +8,7 @@ module Scheduler
     def perform
       return unless ServerSetting.find_by(name: 'Automatic Bluesky bridging for new users')&.value
 
-      if is_channel_dashboard?
+      if is_channel_instance?
         ChannelBlueskyBridgeService.new.process_communities
       else
         NonChannelBlueskyBridgeService.new.process_users

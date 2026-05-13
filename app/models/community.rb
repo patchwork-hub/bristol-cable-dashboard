@@ -25,6 +25,7 @@
 #  logo_image_file_size        :bigint
 #  logo_image_updated_at       :datetime
 #  name                        :string           not null
+#  no_boost_channel            :boolean          default(FALSE)
 #  participants_count          :integer          default(0)
 #  position                    :integer          default(0)
 #  post_visibility             :integer          default("followers_only"), not null
@@ -62,8 +63,8 @@ class Community < ApplicationRecord
   EXCLUDE_ARRAY_IDS = []
 
   has_attached_file :logo_image
-  has_attached_file :avatar_image
-  has_attached_file :banner_image
+  has_attached_file :avatar_image, preserve_files: true
+  has_attached_file :banner_image, preserve_files: true
 
   attribute :is_custom_domain, :boolean, default: false
 

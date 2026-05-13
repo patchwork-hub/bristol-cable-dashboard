@@ -9,6 +9,7 @@ class FetchDidValueService < BaseService
   def call(account, community)
     @account = account
     @community = community
+    @local_domain = ENV['LOCAL_DOMAIN']
 
 
     did_value = if is_channel_dashboard?
@@ -23,21 +24,24 @@ class FetchDidValueService < BaseService
 
   def account_url
     return unless @account&.username
+    puts "[FetchDidValueService] url: https://fed.brid.gy/ap/@#{@account.username}@#{@local_domain}"
 
-    "https://fed.brid.gy/ap/@#{@account.username}@#{ENV['LOCAL_DOMAIN']}"
+    "https://fed.brid.gy/ap/@#{@account.username}@#{@local_domain}"
   end
 
   def community_slug_url
     return unless @community&.slug
-    domain = @community.is_custom_domain? ? @community.slug : "#{@community.slug}.#{ENV['LOCAL_DOMAIN']}"
+    domain = @community.is_custom_domain? ? @community.slug : "#{@community.slug}.#{@local_domain}"
+    puts "[FetchDidValueService] url: https://fed.brid.gy/ap/@#{domain}"
 
     "https://fed.brid.gy/ap/@#{domain}"
   end
 
   def community_name_url
     return unless @community&.name
+    puts "[FetchDidValueService] url: https://fed.brid.gy/ap/@#{@community.name}@#{@local_domain}"
 
-    "https://fed.brid.gy/ap/@#{@community.name}@#{ENV['LOCAL_DOMAIN']}"
+    "https://fed.brid.gy/ap/@#{@community.name}@#{@local_domain}"
   end
 
   def fetch_did_value(url)
@@ -53,14 +57,18 @@ class FetchDidValueService < BaseService
 
   def extract_did_value(response_body)
     document = Nokogiri::HTML(response_body)
-    onclick_value = document.at_css("button[onclick*='writeText']")&.attr('onclick')
-
-    if onclick_value
-      did_value = onclick_value.match(/'([^']+)'/)[1]
-      did_value
-    else
-      nil
+    did_button = document.at_css("button.glyphicon-tag[onclick*='copy']")
+    
+    if did_button
+      onclick_value = did_button.attr('onclick')
+      did_match = onclick_value&.match(/copy\('(did:[^']+)'\)/)
+      return did_match[1] if did_match
+      
+      title_value = did_button.attr('title')
+      title_match = title_value&.match(/(did:\w+:\w+)/)
+      return title_match[1] if title_match
     end
+    nil
   end
 
 end
